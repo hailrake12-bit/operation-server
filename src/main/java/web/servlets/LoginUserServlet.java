@@ -1,13 +1,12 @@
 package web.servlets;
 
 import web.Request;
-import web.Response;
+import web.responses.Response;
 
-import java.io.Serializable;
 import java.sql.*;
 
 public class LoginUserServlet implements Servlet {
-    private static final String URL = "jdbc:postgresql://db:5432/operation-server";
+    private static final String URL = "jdbc:postgresql://localhost:5434/operation-server";
     private static final String USER = "postgres";
     private static final String PASSWORD = "password";
 
@@ -17,8 +16,8 @@ public class LoginUserServlet implements Servlet {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = connection.prepareStatement(selectSQL)) {
 
-            stmt.setString(1, request.getUser());
-            stmt.setString(2, request.getPassword());
+            stmt.setString(1, request.getBody()[0].split(":")[1]);
+            stmt.setString(2, request.getBody()[1].split(":")[1]);
 
             try (ResultSet resultSet = stmt.executeQuery()) {
                 if (!resultSet.next()) {

@@ -1,9 +1,12 @@
-package web;
+package web.responses;
+
+import java.util.ArrayList;
 
 public class Response {
     String status = "200";
     String description = "OK";
     String content;
+    ArrayList<Body> body;
 
     public String getStatus() {
         return status;
@@ -27,5 +30,24 @@ public class Response {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setBody(ArrayList<Body> body) {
+        this.body = body;
+    }
+
+    public ArrayList<Body> getBody() {
+        return body;
+    }
+
+    public StringBuilder toJson(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("[\n");
+        for (int i = 0; i < body.size(); i++) {
+            sb.append(body.get(i).toJson());
+            if (i < body.size() - 1) sb.append(",\n");
+        }
+        sb.append("\n]");
+        return sb;
     }
 }

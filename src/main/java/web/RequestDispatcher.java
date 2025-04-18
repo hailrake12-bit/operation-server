@@ -1,33 +1,38 @@
 package web;
 
-import web.database.DataBase;
-import web.servlets.LoginUserServlet;
-import web.servlets.RegisterUserServlet;
-import web.servlets.Servlet;
+import web.responses.Response;
+import web.servlets.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 public class RequestDispatcher {
     private BufferedWriter writer;
     private BufferedReader reader;
 
-    private final Map<String, Servlet> routes = new HashMap<>();
+
+    private final Map<String, Map<String, Servlet>> routes = new HashMap<>();
 
     public RequestDispatcher(BufferedWriter writer, BufferedReader reader) {
         this.writer = writer;
         this.reader = reader;
 
-        routes.put("/register", new RegisterUserServlet());
-        routes.put("/login", new LoginUserServlet());
+        Map<String, Servlet> registerRoutes = new HashMap<>();
+        registerRoutes.put("POST", new RegisterUserServlet());
+        routes.put("/register", registerRoutes);
+
+        Map<String, Servlet> loginRoutes = new HashMap<>();
+        loginRoutes.put("POST", new LoginUserServlet());
+        routes.put("/login", loginRoutes);
+
+        Map<String, Servlet> testRoutes = new HashMap<>();
+        testRoutes.put("GET", new GetTestServlet());
+        routes.put("/tests", testRoutes);
     }
 
     public void dispatch() throws Exception{
@@ -35,31 +40,40 @@ public class RequestDispatcher {
         Request request = parseRequest();
         Response response = new Response();
 
-        Servlet servlet = routes.get(request.getUrl());
+        Map<String,Servlet> methodRoutes = routes.get(request.getUrl());
 
-        if(servlet == null){
+        if(methodRoutes == null){
             response.setStatus("404");
             response.setDescription("No such path");
+
+            sendResponse(response);
+
+            return;
+        }
+
+        Servlet servlet = methodRoutes.get(request.getMethod());
+
+        if (servlet == null) {
+            response.setStatus("405"); // Метод не поддерживается
+            response.setDescription("Method Not Allowed");
+
+            sendResponse(response);
+
+            return;
         }
 
         servlet.service(request, response);
+        sendResponse(response);
 
+    }
+
+    private void sendResponse(Response response) throws IOException {
         writer.write("HTTP/1.1 " + response.getStatus() + " " + response.getDescription() + "\r\n\r\n");
+        if(response.getBody()!=null){
+            writer.write(response.toJson().toString());
+        }
         writer.flush();
     }
-
-    public void testDB(){
-        String URL = "jdbc:postgresql://localhost:5433/mydb";
-        String USER = "postgres";
-        String PASSWORD = "postgres";
-
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            System.out.println("Успешное подключение к PostgreSQL!");
-        } catch (SQLException e) {
-            System.err.println("Ошибка подключения: " + e.getMessage());
-        }
-    }
-
 
     private Request parseRequest() throws Exception {
         List<String> lines = new ArrayList<>();
@@ -86,9 +100,11 @@ public class RequestDispatcher {
         String[] body = bodyRaw.replace("{", "")
                 .replace("}", "")
                 .replace("\"", "")
+                .replace(" ", "")
+                .replace("\r\n", "")
                 .split(",");
 
-        return new Request(path, method, body[0], body[1]);
+        return new Request(path, method, body);
     }
 
 }

@@ -1,9 +1,8 @@
 package web.servlets;
 
 import web.Request;
-import web.Response;
-import web.database.DataBase;
+import web.responses.Response;
 
 public interface Servlet {
-    void service(Request req, Response rep) throws Exception;
+    void service(Request request, Response response) throws Exception;
 }
