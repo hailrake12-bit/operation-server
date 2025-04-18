@@ -15,7 +15,7 @@ services:
   backend:
     build: .
     ports:
-      - "4444:4444"
+      - "4444:4445"
     depends_on:
       - db
     environment:

@@ -1,6 +1,7 @@
 package web.servlets;
 
 import web.Request;
+import web.database.DataBase;
 import web.responses.Body;
 import web.responses.Response;
 import web.responses.entities.Question;
@@ -9,10 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GetTestServlet implements Servlet{
-    private static final String URL = "jdbc:postgresql://localhost:5434/operation-server";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "password";
+public class GetTestServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
@@ -23,7 +21,7 @@ public class GetTestServlet implements Servlet{
         String theme = request.getBody()[0].split(":")[1];
         Integer amount = Integer.parseInt(request.getBody()[1].split(":")[1]);
 
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement idStatement = connection.prepareStatement(selectIdsSQL)) {
 
             idStatement.setString(1, theme);

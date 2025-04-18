@@ -7,6 +7,9 @@ WORKDIR /app
 # Копируем собранный .jar файл в контейнер
 COPY target/operation-server-1.0-SNAPSHOT.jar app.jar
 
+# Копируем questions.txt в контейнер (в директорию /app)
+COPY src/main/resources/questions.txt /app/questions.txt
+
 # Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
