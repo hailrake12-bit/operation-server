@@ -1,5 +1,6 @@
 package web;
 
+import web.requests.Request;
 import web.responses.Response;
 import web.servlets.*;
 
@@ -33,12 +34,23 @@ public class RequestDispatcher {
         Map<String, Servlet> testRoutes = new HashMap<>();
         testRoutes.put("GET", new GetTestServlet());
         routes.put("/tests", testRoutes);
+
+        Map<String, Servlet> themeRoutes = new HashMap<>();
+        themeRoutes.put("GET", new RandomThemeServlet());
+        routes.put("/tests/theme", themeRoutes);
+
+        Map<String, Servlet> amountOfQuestionsRoutes = new HashMap<>();
+        amountOfQuestionsRoutes.put("GET", new RandomAmountServlet());
+        routes.put("/tests/amount", amountOfQuestionsRoutes);
     }
 
     public void dispatch() throws Exception{
+        //readRequest(reader);
 
         Request request = parseRequest();
         Response response = new Response();
+
+        //request.printRequest();
 
         Map<String,Servlet> methodRoutes = routes.get(request.getUrl());
 
@@ -93,9 +105,10 @@ public class RequestDispatcher {
         // 3. Обработка первой строки (например: "POST /addUser HTTP/1.1")
         String[] requestLine = lines.get(0).split(" ");
         String method = requestLine[0];
-        String path = requestLine[1];
+        String path = requestLine[1].split("\\?")[0];
+        String[] queryParams = requestLine[1].split("\\?")[1].split("&");
 
-        // 4. Обработка тела как JSON (можно использовать библиотеку, но пока просто разберём на строки)
+        // 4. Обработка тела как JSON
         String bodyRaw = bodyBuilder.toString();
         String[] body = bodyRaw.replace("{", "")
                 .replace("}", "")
@@ -104,7 +117,14 @@ public class RequestDispatcher {
                 .replace("\r\n", "")
                 .split(",");
 
-        return new Request(path, method, body);
+        return new Request(method, path, queryParams, body);
+    }
+
+    public static void readRequest(BufferedReader reader) throws Exception{
+        String line;
+        while((line = reader.readLine())!=null){
+            System.out.println(line);
+        }
     }
 
 }

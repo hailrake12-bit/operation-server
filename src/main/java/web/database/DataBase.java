@@ -1,7 +1,7 @@
 package web.database;
 
 public class DataBase {
-    private static final String URL = "jdbc:postgresql://db:5432/operation-server";
+    private static final String URL = "jdbc:postgresql://localhost:5434/operation-server";
     private static final String user = "postgres";
     private static final String password = "password";
 

@@ -1,16 +1,24 @@
 package web.servlets;
 
 import web.requests.Request;
+import web.responses.Body;
 import web.responses.Response;
+import web.responses.entities.AmountOfQuestions;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Random;
 
-public class RegisterUserServlet extends Servlet {
+public class CollectTestInfoServlet extends Servlet {
 
-    public void service(Request request, Response response) throws SQLException{
+    @Override
+    public void service(Request request, Response response) throws Exception {
+        String username = request.getQueryParams()[0].split("=")[1];
+
+        String theme = request.getBody()[0].split(":")[1];
+        int CorrectAnswers = Integer.parseInt(request.getBody()[1].split(":")[1]);
+        int IncorrectAnswers = Integer.parseInt(request.getBody()[1].split(":")[1]);
+
 
         String insertSQL = "INSERT INTO users (username, password) VALUES (?, ?)";
 
@@ -28,5 +36,4 @@ public class RegisterUserServlet extends Servlet {
             response.setDescription("Registration failed");
         }
     }
-
 }

@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class DataBaseInitializer {
     private static DataBase db = new DataBase();
-    private static String filePath = "/app/questions.txt";
+    private static String filePath = "src/main/resources/questions.txt";
 
     public static void Initialize(){
         try(
@@ -17,12 +17,12 @@ public class DataBaseInitializer {
         ){
             statement.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS public.users (
-                    userid int GENERATED ALWAYS AS IDENTITY NOT NULL,
+                    user_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
                     username varchar NOT NULL,
                     "password" varchar NOT NULL,
-                    PRIMARY KEY (userid)
+                    PRIMARY KEY (user_id)
                 );
-                CREATE TABLE IF NOT EXISTs public.questions (
+                CREATE TABLE IF NOT EXISTS public.questions (
                     questionid int GENERATED ALWAYS AS IDENTITY NOT NULL,
                     question varchar NOT NULL,
                     answer1 varchar NOT NULL,
@@ -34,6 +34,16 @@ public class DataBaseInitializer {
                     CONSTRAINT questionn_pk PRIMARY KEY (questionid),
                     CONSTRAINT unique_question UNIQUE (question)
                 );
+                CREATE TABLE IF NOT EXISTS public.users_grades (
+                	grade_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
+                	user_id int NOT NULL,
+                	theme varchar NOT NULL,
+                	grade int NOT NULL,
+                	CONSTRAINT users_grades_pk PRIMARY KEY (grade_id),
+                    FOREIGN KEY (user_id) REFERENCES public.users(user_id)
+                    ON DELETE CASCADE
+                );
+                
             """);
 
 

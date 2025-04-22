@@ -1,7 +1,6 @@
 package web.servlets;
 
-import web.Request;
-import web.database.DataBase;
+import web.requests.Request;
 import web.responses.Response;
 
 import java.sql.*;

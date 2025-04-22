@@ -42,12 +42,12 @@ public class Response {
 
     public StringBuilder toJson(){
         StringBuilder sb = new StringBuilder();
-        sb.append("[\n");
+        if(body.size() > 1) sb.append("[\n\t");
         for (int i = 0; i < body.size(); i++) {
             sb.append(body.get(i).toJson());
             if (i < body.size() - 1) sb.append(",\n");
         }
-        sb.append("\n]");
+        if(body.size() > 1) sb.append("\n\t]");
         return sb;
     }
 }

@@ -1,6 +1,6 @@
 package web.servlets;
 
-import web.Request;
+import web.requests.Request;
 import web.database.DataBase;
 import web.responses.Response;
 
