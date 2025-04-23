@@ -31,13 +31,18 @@ public class RequestDispatcher {
         loginRoutes.put("POST", new LoginUserServlet());
         routes.put("/login", loginRoutes);
 
+        Map<String, Servlet> gradesRoutes = new HashMap<>();
+        gradesRoutes.put("GET", new GetGradesServlet());
+        gradesRoutes.put("PATCH", new UpdateGradeServlet());
+        routes.put("/grades", gradesRoutes);
+
         Map<String, Servlet> testRoutes = new HashMap<>();
         testRoutes.put("GET", new GetTestServlet());
         routes.put("/tests", testRoutes);
 
         Map<String, Servlet> themeRoutes = new HashMap<>();
         themeRoutes.put("GET", new RandomThemeServlet());
-        routes.put("/tests/theme", themeRoutes);
+        routes.put("/tests/themes", themeRoutes);
 
         Map<String, Servlet> amountOfQuestionsRoutes = new HashMap<>();
         amountOfQuestionsRoutes.put("GET", new RandomAmountServlet());
@@ -106,7 +111,14 @@ public class RequestDispatcher {
         String[] requestLine = lines.get(0).split(" ");
         String method = requestLine[0];
         String path = requestLine[1].split("\\?")[0];
-        String[] queryParams = requestLine[1].split("\\?")[1].split("&");
+
+        String[] requestParts = requestLine[1].split("\\?", 2); // ограничиваем количество разбиений
+        String[] queryParams = new String[0]; // по умолчанию — пустой массив
+
+        if (requestParts.length == 2) {
+            queryParams = requestParts[1].split("&");
+        }
+
 
         // 4. Обработка тела как JSON
         String bodyRaw = bodyBuilder.toString();

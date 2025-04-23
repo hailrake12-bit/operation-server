@@ -17,10 +17,9 @@ public class DataBaseInitializer {
         ){
             statement.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS public.users (
-                    user_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
                     username varchar NOT NULL,
                     "password" varchar NOT NULL,
-                    PRIMARY KEY (user_id)
+                    PRIMARY KEY (username)
                 );
                 CREATE TABLE IF NOT EXISTS public.questions (
                     questionid int GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -35,12 +34,11 @@ public class DataBaseInitializer {
                     CONSTRAINT unique_question UNIQUE (question)
                 );
                 CREATE TABLE IF NOT EXISTS public.users_grades (
-                	grade_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
-                	user_id int NOT NULL,
+                	username varchar NOT NULL,
                 	theme varchar NOT NULL,
-                	grade int NOT NULL,
-                	CONSTRAINT users_grades_pk PRIMARY KEY (grade_id),
-                    FOREIGN KEY (user_id) REFERENCES public.users(user_id)
+                	grade real,
+                	CONSTRAINT users_grades_pk PRIMARY KEY (username, theme),
+                    FOREIGN KEY (username) REFERENCES public.users(username)
                     ON DELETE CASCADE
                 );
                 

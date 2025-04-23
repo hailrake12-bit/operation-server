@@ -21,13 +21,7 @@ public class RandomThemeServlet extends Servlet{
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement idStatement = connection.prepareStatement(selectThemeSQL)) {
 
-            ArrayList<String> themes = new ArrayList<String>();
-
-            try (ResultSet resultSet = idStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    themes.add(resultSet.getString("theme"));
-                }
-            }
+            ArrayList<String> themes = getThemes(connection);
 
             if (themes.size() == 0) {
                 response.setStatus("400");
@@ -47,6 +41,27 @@ public class RandomThemeServlet extends Servlet{
             System.err.println("Ошибка подключения: " + e.getMessage());
             response.setStatus("400");
             response.setDescription("Registration failed");
+        }
+    }
+
+    public static ArrayList<String> getThemes(Connection connection) throws SQLException {
+        String selectThemeSQL = "SELECT DISTINCT theme FROM questions";
+
+        try (PreparedStatement idStatement = connection.prepareStatement(selectThemeSQL)) {
+
+            ArrayList<String> themes = new ArrayList<>();
+
+            try (ResultSet resultSet = idStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    themes.add(resultSet.getString("theme"));
+                }
+            }
+
+            if (themes.size() == 0) {
+                return null;
+            }
+
+            return themes;
         }
     }
 }
