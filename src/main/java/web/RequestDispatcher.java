@@ -87,7 +87,7 @@ public class RequestDispatcher {
     private void sendResponse(Response response) throws IOException {
         writer.write("HTTP/1.1 " + response.getStatus() + " " + response.getDescription() + "\r\n\r\n");
         if(response.getBody()!=null){
-            writer.write(response.toJson().toString());
+            writer.write(response.writeBody());
         }
         writer.flush();
     }

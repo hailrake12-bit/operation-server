@@ -6,7 +6,7 @@ public class Response {
     String status = "200";
     String description = "OK";
     String content;
-    ArrayList<Body> body;
+    Body body;
 
     public String getStatus() {
         return status;
@@ -32,22 +32,15 @@ public class Response {
         this.content = content;
     }
 
-    public void setBody(ArrayList<Body> body) {
+    public void setBody(Body body) {
         this.body = body;
     }
 
-    public ArrayList<Body> getBody() {
+    public Body getBody() {
         return body;
     }
 
-    public StringBuilder toJson(){
-        StringBuilder sb = new StringBuilder();
-        if(body.size() > 1) sb.append("[\n\t");
-        for (int i = 0; i < body.size(); i++) {
-            sb.append(body.get(i).toJson());
-            if (i < body.size() - 1) sb.append(",\n");
-        }
-        if(body.size() > 1) sb.append("\n\t]");
-        return sb;
+    public String writeBody(){
+        return body.toJson();
     }
 }

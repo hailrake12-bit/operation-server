@@ -2,12 +2,36 @@ package web.responses.entities;
 
 import web.responses.Body;
 
-public class Grades implements Body {
+import java.util.HashMap;
+import java.util.Map;
 
+public class Grades implements Body {
+    private Map<String, Double> grades;
+
+    public Grades(){
+        grades = new HashMap<>();
+    }
+
+    public Grades(Map<String, Double> grades) {
+        this.grades = grades;
+    }
+
+    public void put(String theme, Double grade){
+        grades.put(theme, grade);
+    }
 
     @Override
     public String toJson() {
-        return String.format("{\n\t \"question\":\"%s\",\n\t \"answer1\":\"%s\", \n\t \"answer2\":\"%s\", \n\t \"answer3\":\"%s\",\n\t \"answer4\":\"%s\", \n\t \"correctAnswer\":\"%s\" \n}",
-                question, answer1, answer2, answer3, answer4, correctAnswer);
+        StringBuilder json = new StringBuilder();
+
+        json.append("{\n");
+
+        for(String key : grades.keySet()){
+            json.append("\t\""+ key + "\":\"" + grades.get(key) + "\"\n");
+        }
+
+        json.append("}");
+
+        return json.toString();
     }
 }

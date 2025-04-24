@@ -3,7 +3,8 @@ package web.servlets;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
-import web.responses.entities.ThemeOfTest;
+import web.responses.entities.TestThemes;
+import web.responses.entities.Theme;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,12 +31,9 @@ public class RandomThemeServlet extends Servlet{
             }
 
             Random rand = new Random();
-            ArrayList<Body> chosenThemeList = new ArrayList<>();
-            ThemeOfTest chosenThemeOfTest = new ThemeOfTest();
-            chosenThemeOfTest.setTheme(themes.get(rand.nextInt(themes.size())));
-            chosenThemeList.add(chosenThemeOfTest);
+            Body chosenThemeOfTest = new Theme(themes.get(rand.nextInt(themes.size())));
 
-            response.setBody(chosenThemeList);
+            response.setBody(chosenThemeOfTest);
 
         } catch (SQLException e) {
             System.err.println("Ошибка подключения: " + e.getMessage());

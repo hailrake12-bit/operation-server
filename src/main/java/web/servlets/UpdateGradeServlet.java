@@ -2,6 +2,7 @@ package web.servlets;
 
 import web.requests.Request;
 import web.responses.Response;
+import web.responses.entities.Grade;
 
 import java.sql.*;
 
@@ -27,19 +28,15 @@ public class UpdateGradeServlet extends Servlet {
 
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement stmt = connection.prepareStatement(insertGradeSQL)) {
-            System.out.println(theme);
             stmt.setString(1, theme);
 
-            double lastGrade = incorrectAnswers * 54.0 / correctAnswers;
-            double currentGrade = getCurrentGrade(username, theme);
-            System.out.println(currentGrade);
-            double newGrade;
-            if(currentGrade != 0) newGrade = (lastGrade + currentGrade) / 2.0;
+            Grade lastGrade = new Grade(incorrectAnswers * 54.0 / correctAnswers);
+            Grade currentGrade = getCurrentGrade(username, theme);
+            Grade newGrade;
+            if(!currentGrade.isEmpty()) newGrade = new Grade(lastGrade,currentGrade);
             else newGrade = lastGrade;
 
-            System.out.println(newGrade);
-            System.out.println(username);
-            stmt.setDouble(2, newGrade);
+            stmt.setDouble(2, newGrade.getGrade());
             stmt.setString(3, username);
 
             stmt.executeUpdate();

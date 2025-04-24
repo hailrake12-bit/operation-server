@@ -4,10 +4,8 @@ import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
 import web.responses.entities.AmountOfQuestions;
-import web.responses.entities.ThemeOfTest;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomAmountServlet extends Servlet{
@@ -38,11 +36,9 @@ public class RandomAmountServlet extends Servlet{
             Random rand = new Random();
             int randAmount = rand.nextInt(amount-1) + 1;
 
-            AmountOfQuestions amountOfQuestions = new AmountOfQuestions(randAmount);
-            ArrayList<Body> amountOfQuestionsList = new ArrayList<Body>();
-            amountOfQuestionsList.add(amountOfQuestions);
+            Body amountOfQuestions = new AmountOfQuestions(randAmount);
 
-            response.setBody(amountOfQuestionsList);
+            response.setBody(amountOfQuestions);
 
         } catch (SQLException e) {
             System.err.println("Ошибка подключения: " + e.getMessage());

@@ -4,6 +4,7 @@ import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
 import web.responses.entities.Question;
+import web.responses.entities.Test;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class GetTestServlet extends Servlet{
                 return;
             }
 
-            // Случайные ID
+
             ArrayList<Integer> selectedIds = new ArrayList<>();
             Random rand = new Random();
             while (selectedIds.size() < amount) {
@@ -48,7 +49,7 @@ public class GetTestServlet extends Servlet{
                 }
             }
 
-            ArrayList<Body> questions = new ArrayList<>();
+            ArrayList<Question> questions = new ArrayList<>();
             try (PreparedStatement questionStatement = connection.prepareStatement(selectQuestionSQL)) {
                 for (int id : selectedIds) {
                     questionStatement.setInt(1, id);
@@ -67,7 +68,9 @@ public class GetTestServlet extends Servlet{
                 }
             }
 
-            response.setBody(questions);
+            Body test = new Test(questions);
+
+            response.setBody(test);
 
         } catch (SQLException e) {
             System.err.println("Ошибка подключения: " + e.getMessage());

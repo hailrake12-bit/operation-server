@@ -1,8 +1,6 @@
 package web.responses.entities;
 
-import web.responses.Body;
-
-public class Question implements Body{
+public class Question {
     String question;
     String answer1;
     String answer2;
@@ -11,7 +9,7 @@ public class Question implements Body{
     String correctAnswer;
 
     public Question(String question, String answer1, String answer2, String answer3,
-                    String answer4, String correct_answer) {
+             String answer4, String correct_answer) {
         this.question = question;
         this.answer1 = answer1;
         this.answer2 = answer2;
@@ -21,7 +19,7 @@ public class Question implements Body{
     }
 
     public String toJson(){
-        return String.format("{\n\t \"question\":\"%s\",\n\t \"answer1\":\"%s\", \n\t \"answer2\":\"%s\", \n\t \"answer3\":\"%s\",\n\t \"answer4\":\"%s\", \n\t \"correctAnswer\":\"%s\" \n}",
+        return String.format("\t{\n\t \"question\":\"%s\",\n\t \"answer1\":\"%s\", \n\t \"answer2\":\"%s\", \n\t \"answer3\":\"%s\",\n\t \"answer4\":\"%s\", \n\t \"correctAnswer\":\"%s\" \n\t}\n",
                 question, answer1, answer2, answer3, answer4, correctAnswer);
     }
 }
