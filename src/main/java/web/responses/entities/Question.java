@@ -19,7 +19,7 @@ public class Question {
     }
 
     public String toJson(){
-        return String.format("\t{\n\t \"question\":\"%s\",\n\t \"answer1\":\"%s\", \n\t \"answer2\":\"%s\", \n\t \"answer3\":\"%s\",\n\t \"answer4\":\"%s\", \n\t \"correctAnswer\":\"%s\" \n\t}\n",
+        return String.format("\t{\n\t \"question\":\"%s\",\n\t \"answer1\":\"%s\", \n\t \"answer2\":\"%s\", \n\t \"answer3\":\"%s\",\n\t \"answer4\":\"%s\", \n\t \"correctAnswer\":\"%s\" \n\t}",
                 question, answer1, answer2, answer3, answer4, correctAnswer);
     }
 }
