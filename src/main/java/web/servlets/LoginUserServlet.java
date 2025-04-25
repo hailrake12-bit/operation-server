@@ -8,7 +8,7 @@ import java.sql.*;
 public class LoginUserServlet extends Servlet {
 
     public void service(Request request, Response response) throws SQLException {
-        String selectSQL = "Select userid, username FROM users WHERE username = ? AND password = ?";
+        String selectSQL = "Select username FROM users WHERE username = ? AND password = ?";
 
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement stmt = connection.prepareStatement(selectSQL)) {
