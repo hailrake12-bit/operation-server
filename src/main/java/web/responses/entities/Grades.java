@@ -29,13 +29,15 @@ public class Grades implements Body {
 
         List<String> gradesJson = new ArrayList<>();
         for(String key : grades.keySet()){
-            gradesJson.add("\t{\n\t\""+ key + "\":\"" + grades.get(key) + "\"\n\t}");
+            gradesJson.add("\t{\"theme\":\"" + key + "\",\"grade\":\"" + grades.get(key)+ "\"}");
         }
 
+        json.append("{\n");
+        json.append("\"grades\":");
         if(gradesJson.size()>1) json.append("[\n");
         json.append(String.join(",\n", gradesJson));
-        if(gradesJson.size()>1) json.append("\n]");
-
+        if(gradesJson.size()>1) json.append("\n\t]");
+        json.append("\n}");
 
         return json.toString();
     }
