@@ -2,7 +2,9 @@ package web.responses.entities;
 
 import web.responses.Body;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Grades implements Body {
@@ -24,13 +26,16 @@ public class Grades implements Body {
     public String toJson() {
         StringBuilder json = new StringBuilder();
 
-        json.append("{\n");
 
+        List<String> gradesJson = new ArrayList<>();
         for(String key : grades.keySet()){
-            json.append("\t\""+ key + "\":\"" + grades.get(key) + "\"\n");
+            gradesJson.add("\t{\n\t\""+ key + "\":\"" + grades.get(key) + "\"\n\t}");
         }
 
-        json.append("}");
+        if(gradesJson.size()>1) json.append("[\n");
+        json.append(String.join(",\n", gradesJson));
+        if(gradesJson.size()>1) json.append("\n]");
+
 
         return json.toString();
     }
