@@ -40,6 +40,10 @@ public class RequestDispatcher {
         testRoutes.put("GET", new GetTestServlet());
         routes.put("/tests", testRoutes);
 
+        Map<String, Servlet> bookRoutes = new HashMap<>();
+        bookRoutes.put("GET", new GetFirstBookServlet());
+        routes.put("/books", bookRoutes);
+
         Map<String, Servlet> themeRoutes = new HashMap<>();
         themeRoutes.put("GET", new RandomThemeServlet());
         routes.put("/tests/themes", themeRoutes);

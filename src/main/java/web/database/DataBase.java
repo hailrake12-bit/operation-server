@@ -5,15 +5,15 @@ public class DataBase {
     private static final String user = "postgres";
     private static final String password = "password";
 
-    public String getURL() {
+    public static String getURL() {
         return URL;
     }
 
-    public String getUser() {
+    public static String getUser() {
         return user;
     }
 
-    public String getPassword() {
+    public static String getPassword() {
         return password;
     }
 }

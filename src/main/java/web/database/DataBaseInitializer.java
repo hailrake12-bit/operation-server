@@ -3,19 +3,34 @@ package web.database;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 
 public class DataBaseInitializer {
-    private static DataBase db = new DataBase();
-    private static String filePath = "questions.txt";
+    private static String local = "src/main/resources/";
+
+    private static Path questionsPath = Paths.get("questions.txt");
+    private static Path booksPath = Paths.get("books.txt");
 
     public static void Initialize(){
         try(
-            Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
-            Statement statement = connection.createStatement();
-            BufferedReader reader = new BufferedReader(new FileReader(filePath))
+                Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
+                Statement statement = connection.createStatement();
+                BufferedReader questionReader = Files.newBufferedReader(questionsPath);
+            BufferedReader bookReader = Files.newBufferedReader(booksPath)
         ){
-            statement.executeUpdate("""
+            createTables(connection);
+            insertQuestions(connection, questionReader);
+            insertBooks(connection, bookReader);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void createTables(Connection connection){
+        String tablesQuery = """
                 CREATE TABLE IF NOT EXISTS public.users (
                     username varchar NOT NULL,
                     "password" varchar NOT NULL,
@@ -34,60 +49,98 @@ public class DataBaseInitializer {
                     CONSTRAINT unique_question UNIQUE (question)
                 );
                 CREATE TABLE IF NOT EXISTS public.users_grades (
-                	username varchar NOT NULL,
-                	theme varchar NOT NULL,
-                	grade real,
-                	CONSTRAINT users_grades_pk PRIMARY KEY (username, theme),
+                    username varchar NOT NULL,
+                    theme varchar NOT NULL,
+                    grade real,
+                    book1 BOOLEAN DEFAULT FALSE,
+                    book2 BOOLEAN DEFAULT FALSE,
+                    book3 BOOLEAN DEFAULT FALSE,
+                    book4 BOOLEAN DEFAULT FALSE,
+                    book5 BOOLEAN DEFAULT FALSE,
+                    CONSTRAINT users_grades_pk PRIMARY KEY (username, theme),
                     FOREIGN KEY (username) REFERENCES public.users(username)
                     ON DELETE CASCADE
                 );
-                
-            """);
-
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Разделяем строку на составляющие
-                String[] columns = line.split("#");
-
-                if (columns.length == 7) {  // Проверяем, что в строке 7 элементов
-                    String question = columns[0];
-                    String answer1 = columns[1];
-                    String answer2 = columns[2];
-                    String answer3 = columns[3];
-                    String answer4 = columns[4];
-                    String theme = columns[5];
-                    String correctAnswer = columns[6];
-
-                    // Вставляем данные в базу
-                    insertQuestion(connection, question, answer1, answer2, answer3, answer4, theme, correctAnswer);
-                } else {
-                    System.out.println("Некорректная строка: " + line);
-                }
-            }
-
-
-        } catch(Exception e){
+                CREATE TABLE IF NOT EXISTS  public.books (
+                    theme varchar NULL,
+                    book varchar NULL,
+                    "text" text NULL,
+                    CONSTRAINT books_pk PRIMARY KEY (theme,book)
+                );
+            """;
+        try(Statement statement = connection.createStatement()){
+            statement.executeUpdate(tablesQuery);
+        } catch(SQLException e){
             e.printStackTrace();
         }
     }
 
-    private static void insertQuestion(Connection connection, String question, String answer1, String answer2, String answer3, String answer4, String theme, String correctAnswer) {
-        String sql = "INSERT INTO questions (question, answer1, answer2, answer3, answer4, theme, correct_answer) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (question) DO NOTHING";
+    private static void insertQuestions(Connection connection, BufferedReader questionReader) throws IOException{
+        String line;
+        while ((line = questionReader.readLine()) != null) {
+            // Разделяем строку на составляющие
+            String[] columns = line.split("#");
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, question);
-            ps.setString(2, answer1);
-            ps.setString(3, answer2);
-            ps.setString(4, answer3);
-            ps.setString(5, answer4);
-            ps.setString(6, theme);
-            ps.setString(7, correctAnswer);
+            if (columns.length == 7) {  // Проверяем, что в строке 7 элементов
+                String question = columns[0];
+                String answer1 = columns[1];
+                String answer2 = columns[2];
+                String answer3 = columns[3];
+                String answer4 = columns[4];
+                String theme = columns[5];
+                String correctAnswer = columns[6];
 
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+                String sql = "INSERT INTO questions (question, answer1, answer2, answer3, answer4, theme, correct_answer) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (question) DO NOTHING";
+
+                try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                    ps.setString(1, question);
+                    ps.setString(2, answer1);
+                    ps.setString(3, answer2);
+                    ps.setString(4, answer3);
+                    ps.setString(5, answer4);
+                    ps.setString(6, theme);
+                    ps.setString(7, correctAnswer);
+
+                    ps.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                System.out.println("Некорректная строка: " + line);
+            }
+        }
+    }
+
+    private static void insertBooks(Connection connection, BufferedReader bookReader) throws IOException {
+        String book = null;
+        String theme = null;
+        StringBuilder text = new StringBuilder();
+
+        String sql = "INSERT INTO public.books (theme, book, text) VALUES (?, ?, ?) ON CONFLICT (theme, book) DO NOTHING";
+
+        String line;
+        while ((line = bookReader.readLine()) != null) {
+            if (line.startsWith("book")) {
+                String[] parts = line.split("#");
+                book = parts[0];
+                theme = parts[1];
+            } else if (line.equals("#$#")) {
+                try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                    stmt.setString(1, theme);
+                    stmt.setString(2, book);
+                    stmt.setString(3, text.toString());
+                    stmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                book = null;
+                theme = null;
+                text = new StringBuilder();
+            } else {
+                text.append(line).append("\n");
+            }
         }
     }
 }
