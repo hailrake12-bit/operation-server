@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class DataBaseInitializer {
     private static DataBase db = new DataBase();
-    private static String filePath = "questions.txt";
+    private static String filePath = "src/main/resources/questions.txt";
 
     public static void Initialize(){
         try(

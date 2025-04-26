@@ -16,7 +16,7 @@ public class UpdateGradeServlet extends Servlet {
 
         String theme = request.getBody()[0].split(":")[1];
         int incorrectAnswers = Integer.parseInt(request.getBody()[1].split(":")[1]);
-        int correctAnswers = Integer.parseInt(request.getBody()[2].split(":")[1]);
+        int questionsAmount = Integer.parseInt(request.getBody()[2].split(":")[1]);
 
 
         String insertGradeSQL = """
@@ -30,7 +30,7 @@ public class UpdateGradeServlet extends Servlet {
              PreparedStatement stmt = connection.prepareStatement(insertGradeSQL)) {
             stmt.setString(1, theme);
 
-            Grade lastGrade = new Grade(incorrectAnswers * 54.0 / correctAnswers);
+            Grade lastGrade = new Grade((questionsAmount-incorrectAnswers) * 54.0 / questionsAmount);
             Grade currentGrade = getCurrentGrade(username, theme);
             Grade newGrade;
             if(!currentGrade.isEmpty()) newGrade = new Grade(lastGrade,currentGrade);
