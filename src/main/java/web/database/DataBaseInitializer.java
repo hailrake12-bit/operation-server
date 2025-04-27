@@ -11,8 +11,8 @@ import java.sql.*;
 public class DataBaseInitializer {
     private static String local = "src/main/resources/";
 
-    private static Path questionsPath = Paths.get("questions.txt");
-    private static Path booksPath = Paths.get( "books.txt");
+    private static Path questionsPath = Paths.get(local + "questions.txt");
+    private static Path booksPath = Paths.get( local + "books.txt");
 
     public static void Initialize(){
         try(
@@ -126,7 +126,8 @@ public class DataBaseInitializer {
                 String[] parts = line.split("#");
                 book = parts[0];
                 theme = parts[1];
-            } else if (line.equals("#$#")) {
+            } else if (line.endsWith("#$#")) {
+                text.append(line, 0, line.length()-3);
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setString(1, theme);
                     stmt.setString(2, book);
@@ -138,8 +139,6 @@ public class DataBaseInitializer {
                 book = null;
                 theme = null;
                 text = new StringBuilder();
-            } else {
-                text.append(line).append("\n");
             }
         }
     }
