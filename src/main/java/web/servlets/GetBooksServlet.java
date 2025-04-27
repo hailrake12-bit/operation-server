@@ -4,34 +4,37 @@ import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Response;
 import web.responses.entities.Book;
+import web.responses.entities.Books;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
-public class GetFirstBookServlet extends Servlet{
+public class GetBooksServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String theme = request.getQueryParams()[0].split("=")[1];
-        Book book = new Book();
+        Book book;
+        Books bookList = new Books();
 
-        String selectBookSQL = "SELECT text FROM public.books WHERE theme = ? AND book = 'book1'";
+        String selectBookSQL = "SELECT * FROM public.books ";
 
         try(Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
             PreparedStatement statement = connection.prepareStatement(selectBookSQL)){
 
-            statement.setString(1, theme);
-
-
             try(ResultSet resultSet = statement.executeQuery()){
-                if (resultSet.next()) {
-                    book.setText(resultSet.getString(1));
+                while (resultSet.next()) {
+                    book = new Book();
+                    book.setTheme(resultSet.getString(1));
+                    book.setName(resultSet.getString(2));
+                    book.setText(resultSet.getString(3));
+                    bookList.addBook(book);
                 }
             }
 
-            response.setBody(book);
+            response.setBody(bookList);
         }
     }
 }
