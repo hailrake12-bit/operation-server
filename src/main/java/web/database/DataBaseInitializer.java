@@ -11,8 +11,8 @@ import java.sql.*;
 public class DataBaseInitializer {
     private static String local = "src/main/resources/";
 
-    private static Path questionsPath = Paths.get( "questions.txt");
-    private static Path booksPath = Paths.get( "books.txt");
+    private static Path questionsPath = Paths.get( local + "questions.txt");
+    private static Path booksPath = Paths.get( local + "books.txt");
 
     public static void Initialize(){
         try(
@@ -57,6 +57,8 @@ public class DataBaseInitializer {
                     book3 BOOLEAN DEFAULT FALSE,
                     book4 BOOLEAN DEFAULT FALSE,
                     book5 BOOLEAN DEFAULT FALSE,
+                    book6 BOOLEAN DEFAULT FALSE,
+                    book7 BOOLEAN DEFAULT FALSE,
                     CONSTRAINT users_grades_pk PRIMARY KEY (username, theme),
                     FOREIGN KEY (username) REFERENCES public.users(username)
                     ON DELETE CASCADE
