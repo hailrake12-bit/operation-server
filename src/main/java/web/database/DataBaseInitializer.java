@@ -11,8 +11,8 @@ import java.sql.*;
 public class DataBaseInitializer {
     private static String local = "src/main/resources/";
 
-    private static Path questionsPath = Paths.get( local + "questions.txt");
-    private static Path booksPath = Paths.get( local + "books.txt");
+    private static Path questionsPath = Paths.get( "questions.txt");
+    private static Path booksPath = Paths.get( "books.txt");
 
     public static void Initialize(){
         try(

@@ -33,13 +33,19 @@ public class Book implements Body {
 
     @Override
     public String toJson() {
-        return "{\n" +
-                "  \"Book\": {\n" +
-                "    \"name\": \"" + name + "\",\n" +
-                "    \"theme\": \"" + theme + "\",\n" +
-                "    \"text\": \"" + text + "\"\n" +
-                "  }\n" +
-                "}";
+        if (text!=null) {
+            return "{\n" +
+                    "  \"Book\": {\n" +
+                    "    \"name\": \"" + name + "\",\n" +
+                    "    \"theme\": \"" + theme + "\",\n" +
+                    "    \"text\": \"" + text + "\"\n" +
+                    "  }\n" +
+                    "}";
+        } else{
+            return "{\n" +
+                    " \"bookName\":\"" + name + "\" \n" +
+                    "}\n";
+        }
     }
 
 }

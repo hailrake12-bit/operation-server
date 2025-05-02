@@ -31,7 +31,7 @@ public class UpdateGradeServlet extends Servlet {
             stmt.setString(1, theme);
 
             Grade lastGrade = new Grade((questionsAmount-incorrectAnswers) * 54.0 / questionsAmount);
-            Grade currentGrade = getCurrentGrade(username, theme);
+            Grade currentGrade = getCurrentGrade(connection, username, theme);
             Grade newGrade;
             if(!currentGrade.isEmpty()) newGrade = new Grade(lastGrade,currentGrade);
             else newGrade = lastGrade;

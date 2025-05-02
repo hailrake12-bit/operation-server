@@ -3,25 +3,24 @@ package web.servlets;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
+import web.responses.entities.Grade;
 import web.responses.entities.TestThemes;
 import web.responses.entities.Theme;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+
+import static web.servlets.GetGradesServlet.getCurrentGrade;
 
 public class RandomThemeServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String selectThemeSQL = "SELECT DISTINCT theme FROM questions";
+        String username = request.getQueryParams()[0].split("=")[1];
 
-//        String theme = request.getBody()[0].split(":")[1];
-//        Integer amount = Integer.parseInt(request.getBody()[1].split(":")[1]);
-
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
-             PreparedStatement idStatement = connection.prepareStatement(selectThemeSQL)) {
-
+        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword())) {
             ArrayList<String> themes = getThemes(connection);
 
             if (themes.size() == 0) {
@@ -29,9 +28,8 @@ public class RandomThemeServlet extends Servlet{
                 response.setDescription("questions DataBase is empty");
                 return;
             }
-
             Random rand = new Random();
-            Body chosenThemeOfTest = new Theme(themes.get(rand.nextInt(themes.size())));
+            Body chosenThemeOfTest = getSuitableTheme(connection, username, themes);
 
             response.setBody(chosenThemeOfTest);
 
@@ -61,5 +59,35 @@ public class RandomThemeServlet extends Servlet{
 
             return themes;
         }
+    }
+
+    private Body getSuitableTheme(Connection connection,String username, ArrayList<String> themes) throws SQLException{
+        HashMap<String, Double> grades = new HashMap<>();
+        Grade lastGrade, newGrade = new Grade(0);
+
+        double randSum = 0;
+        for(String theme : themes){
+            lastGrade = new Grade(randSum);
+            newGrade = getCurrentGrade(connection, username, theme);
+            randSum = 54 - newGrade.getGrade() + lastGrade.getGrade();
+
+            grades.put(theme, randSum);
+        }
+
+        Random random = new Random();
+        int keyNum = random.nextInt((int) randSum);
+
+        System.out.println(grades);
+        System.out.println(keyNum);
+
+        Body suitableTheme =  new Theme(themes.get(random.nextInt(themes.size())));
+        for(String theme : themes){
+            if(keyNum < grades.get(theme)) {
+                suitableTheme = new Theme(theme);
+                break;
+            }
+        }
+
+        return suitableTheme;
     }
 }

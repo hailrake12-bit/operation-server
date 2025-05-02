@@ -9,6 +9,7 @@ import web.responses.entities.Theme;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.zip.CheckedOutputStream;
 
 public class GetGradesServlet extends Servlet{
     @Override
@@ -37,11 +38,10 @@ public class GetGradesServlet extends Servlet{
     }
 
 
-    public static Grade getCurrentGrade(String username, String theme) throws SQLException {
+    public static Grade getCurrentGrade(Connection connection, String username, String theme) throws SQLException {
         String getGradeSQL = "SELECT grade FROM users_grades WHERE username = ? AND theme = ?";
 
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
-        PreparedStatement stmt = connection.prepareStatement(getGradeSQL)) {
+        try (PreparedStatement stmt = connection.prepareStatement(getGradeSQL)) {
 
             Grade grade = new Grade(0.0);
             stmt.setString(1, username);

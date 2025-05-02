@@ -3,6 +3,7 @@ package web.servlets;
 import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Response;
+import web.responses.entities.Book;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,7 +28,7 @@ public class GetCurrentBookByThemeServlet extends Servlet {
 
             statement.setString(1, username);
             statement.setString(2, theme);
-            String currentBook = null;
+            String currentBook = bookNames.get(bookNames.size()-1);
             try(ResultSet resultSet = statement.executeQuery()){
 
                 if (resultSet.next()) {
@@ -39,8 +40,11 @@ public class GetCurrentBookByThemeServlet extends Servlet {
                     }
                 }
             }
+            updateBook(connection, currentBook, username, theme);
 
-            System.out.println(currentBook);
+            Book book = new Book();
+            book.setName(currentBook);
+            response.setBody(book);
         }
     }
 
@@ -58,6 +62,16 @@ public class GetCurrentBookByThemeServlet extends Servlet {
             }
 
             return bookNames;
+        }
+    }
+
+    private void updateBook(Connection connection, String bookName, String username, String theme) throws Exception{
+        String updateBookSQL = "UPDATE public.users_grades SET " + bookName + " = TRUE WHERE username = ? AND theme = ?";
+
+        try(PreparedStatement statement = connection.prepareStatement(updateBookSQL)){
+         statement.setString(1, username);
+         statement.setString(2, theme);
+         statement.executeUpdate();
         }
     }
 }
