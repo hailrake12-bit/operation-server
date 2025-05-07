@@ -12,7 +12,7 @@ public class UpdateGradeServlet extends Servlet {
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String username = request.getQueryParams()[0].split("=")[1];
+        String username = request.getParams()[0].split("=")[1];
 
         String theme = request.getBody()[0].split(":")[1];
         int incorrectAnswers = Integer.parseInt(request.getBody()[1].split(":")[1]);

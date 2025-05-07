@@ -18,8 +18,8 @@ public class GetTestServlet extends Servlet{
         String selectQuestionSQL = "Select question, answer1, answer2, answer3," +
                 " answer4, correct_answer FROM questions WHERE questionid = ?";
 
-        String theme = request.getQueryParams()[0].split("=")[1];
-        Integer amount = Integer.parseInt(request.getQueryParams()[1].split("=")[1]);
+        String theme = request.getParams()[0].split("=")[1];
+        Integer amount = Integer.parseInt(request.getParams()[1].split("=")[1]);
 
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement idStatement = connection.prepareStatement(selectIdsSQL)) {

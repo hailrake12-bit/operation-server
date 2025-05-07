@@ -10,23 +10,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
 
 public class GetBooksServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        Book book;
-        Books bookList = new Books();
-
-        String selectBookSQL = "SELECT * FROM public.books ";
+        String selectBookSQL = "SELECT * FROM public.books";
 
         try(Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
             PreparedStatement statement = connection.prepareStatement(selectBookSQL)){
+            Books bookList = new Books();
 
             try(ResultSet resultSet = statement.executeQuery()){
                 while (resultSet.next()) {
-                    book = new Book();
+                    Book book = new Book();
                     book.setTheme(resultSet.getString(1));
                     book.setName(resultSet.getString(2));
                     book.setText(resultSet.getString(3));

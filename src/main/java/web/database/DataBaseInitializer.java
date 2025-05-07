@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 import java.sql.*;
 
 public class DataBaseInitializer {
-    private static String local = "src/main/resources/";
+    private final static String local = "src/main/resources/";
 
-    private static Path questionsPath = Paths.get( "questions.txt");
-    private static Path booksPath = Paths.get( "books.txt");
+    private final static Path questionsPath = Paths.get( local + "questions.txt");
+    private final static Path booksPath = Paths.get( local + "books.txt");
 
     public static void Initialize(){
         try(

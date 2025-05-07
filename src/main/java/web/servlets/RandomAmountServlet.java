@@ -12,7 +12,7 @@ public class RandomAmountServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String theme = request.getQueryParams()[0].split("=")[1];
+        String theme = request.getParams()[0].split("=")[1];
         String selectAmountSQL = "SELECT COUNT(*) FROM questions WHERE theme = ?";
 
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());

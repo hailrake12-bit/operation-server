@@ -1,15 +1,11 @@
 package web.servlets;
 
 import web.requests.Request;
-import web.responses.Body;
 import web.responses.Response;
 import web.responses.entities.Grade;
 import web.responses.entities.Grades;
-import web.responses.entities.Theme;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.zip.CheckedOutputStream;
 
 public class GetGradesServlet extends Servlet{
     @Override
@@ -18,7 +14,7 @@ public class GetGradesServlet extends Servlet{
 
         Grades grades = new Grades();
 
-        String username = request.getQueryParams()[0].split("=")[1];
+        String username = request.getParams()[0].split("=")[1];
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
              PreparedStatement stmt = connection.prepareStatement(selectGradesSQL)) {
 

@@ -4,7 +4,6 @@ import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
 import web.responses.entities.Grade;
-import web.responses.entities.TestThemes;
 import web.responses.entities.Theme;
 
 import java.sql.*;
@@ -18,7 +17,7 @@ public class RandomThemeServlet extends Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String username = request.getQueryParams()[0].split("=")[1];
+        String username = request.getParams()[0].split("=")[1];
 
         try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword())) {
             ArrayList<String> themes = getThemes(connection);

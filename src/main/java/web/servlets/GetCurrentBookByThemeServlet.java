@@ -15,16 +15,14 @@ public class GetCurrentBookByThemeServlet extends Servlet {
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String theme = request.getQueryParams()[0].split("=")[1];
-        String username = request.getQueryParams()[1].split("=")[1];
+        String theme = request.getParam("theme");
+        String username = request.getParam("username");
 
         String getCurrentBookSQL = "SELECT * FROM public.users_grades WHERE username = ? and theme = ?";
 
         try(Connection connection = DriverManager.getConnection(DataBase.getURL(),DataBase.getUser(), DataBase.getPassword());
         PreparedStatement statement = connection.prepareStatement(getCurrentBookSQL)){
             ArrayList<String> bookNames = getBooksListByTheme(connection, theme);
-
-            System.out.println(bookNames);
 
             statement.setString(1, username);
             statement.setString(2, theme);
@@ -57,7 +55,8 @@ public class GetCurrentBookByThemeServlet extends Servlet {
 
             try(ResultSet resultSet = statement.executeQuery()){
                 while(resultSet.next()){
-                    bookNames.add(resultSet.getString("book"));
+                    String bookName = resultSet.getString("book");
+                    bookNames.add(bookName);
                 }
             }
 
