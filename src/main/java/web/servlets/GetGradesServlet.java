@@ -2,8 +2,8 @@ package web.servlets;
 
 import web.requests.Request;
 import web.responses.Response;
-import web.responses.entities.Grade;
-import web.responses.entities.Grades;
+import web.entities.Grade;
+import web.entities.Grades;
 
 import java.sql.*;
 

@@ -37,7 +37,7 @@ public class DataBaseInitializer {
                     PRIMARY KEY (username)
                 );
                 CREATE TABLE IF NOT EXISTS public.questions (
-                    questionid int GENERATED ALWAYS AS IDENTITY NOT NULL,
+                    question_id int GENERATED ALWAYS AS IDENTITY NOT NULL,
                     question varchar NOT NULL,
                     answer1 varchar NOT NULL,
                     answer2 varchar NOT NULL,
@@ -45,21 +45,24 @@ public class DataBaseInitializer {
                     answer4 varchar NOT NULL,
                     theme varchar NOT NULL,
                     correct_answer varchar NOT NULL,
-                    CONSTRAINT questionn_pk PRIMARY KEY (questionid),
+                    CONSTRAINT question_pk PRIMARY KEY (question_id),
                     CONSTRAINT unique_question UNIQUE (question)
                 );
                 CREATE TABLE IF NOT EXISTS public.users_grades (
                     username varchar NOT NULL,
                     theme varchar NOT NULL,
                     grade real,
-                    book1 BOOLEAN DEFAULT FALSE,
-                    book2 BOOLEAN DEFAULT FALSE,
-                    book3 BOOLEAN DEFAULT FALSE,
-                    book4 BOOLEAN DEFAULT FALSE,
-                    book5 BOOLEAN DEFAULT FALSE,
-                    book6 BOOLEAN DEFAULT FALSE,
-                    book7 BOOLEAN DEFAULT FALSE,
                     CONSTRAINT users_grades_pk PRIMARY KEY (username, theme),
+                    FOREIGN KEY (username) REFERENCES public.users(username)
+                    ON DELETE CASCADE
+                );
+                CREATE TABLE IF NOT EXISTS public.users_books (
+                    id int GENERATED ALWAYS AS IDENTITY NOT NULL,
+                    username varchar NOT NULL,
+                    theme varchar NOT NULL,
+                    book_name varchar NOT NULL,
+                    is_read boolean default false,
+                    CONSTRAINT users_books_pk PRIMARY KEY (id),
                     FOREIGN KEY (username) REFERENCES public.users(username)
                     ON DELETE CASCADE
                 );

@@ -1,4 +1,4 @@
-package web.responses.entities;
+package web.entities;
 
 public class Question {
     String question;

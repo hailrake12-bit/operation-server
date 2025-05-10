@@ -3,8 +3,8 @@ package web.servlets;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
-import web.responses.entities.Grade;
-import web.responses.entities.Theme;
+import web.entities.Grade;
+import web.entities.Theme;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class RandomThemeServlet extends Servlet{
             response.setDescription("Registration failed");
         }
     }
-
+    //change return parameter to ArrayList<Theme>
     public static ArrayList<String> getThemes(Connection connection) throws SQLException {
         String selectThemeSQL = "SELECT DISTINCT theme FROM questions";
 

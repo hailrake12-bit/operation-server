@@ -3,8 +3,8 @@ package web.servlets;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
-import web.responses.entities.Question;
-import web.responses.entities.Test;
+import web.entities.Question;
+import web.entities.Test;
 
 import java.sql.*;
 import java.util.ArrayList;

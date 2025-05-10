@@ -3,8 +3,8 @@ package web.servlets;
 import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Response;
-import web.responses.entities.Book;
-import web.responses.entities.Books;
+import web.entities.Book;
+import web.entities.Books;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,3 +35,5 @@ public class GetBooksServlet extends Servlet{
         }
     }
 }
+
+//Refactored

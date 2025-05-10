@@ -6,15 +6,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private int port;
+    private final int port;
 
-    private ServerSocket serverSocket;
+    private final ServerSocket serverSocket;
 
     private volatile boolean running = false;
 
     public Server(int port) throws Exception{
         this.port = port;
-        serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket(this.port);
     }
 
     public void start() throws Exception{

@@ -3,7 +3,7 @@ package web.servlets;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
-import web.responses.entities.AmountOfQuestions;
+import web.entities.AmountOfQuestions;
 
 import java.sql.*;
 import java.util.Random;
