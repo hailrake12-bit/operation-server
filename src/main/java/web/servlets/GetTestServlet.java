@@ -1,5 +1,6 @@
 package web.servlets;
 
+import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
@@ -10,26 +11,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GetTestServlet extends Servlet{
+public class GetTestServlet implements Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
         String selectIdsSQL = "Select questionid FROM questions WHERE theme = ?";
-        String selectQuestionSQL = "Select question, answer1, answer2, answer3," +
-                " answer4, correct_answer FROM questions WHERE questionid = ?";
+        String selectQuestionSQL = "Select question, answer1, answer2, answer3, answer4, correct_answer " +
+                                    "FROM questions WHERE questionid = ?";
 
-        String theme = request.getParams()[0].split("=")[1];
-        Integer amount = Integer.parseInt(request.getParams()[1].split("=")[1]);
+        String theme = request.getParam("theme");
+        int amount = Integer.parseInt(request.getParam("amount"));
 
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
+        try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
              PreparedStatement idStatement = connection.prepareStatement(selectIdsSQL)) {
 
             idStatement.setString(1, theme);
-            ArrayList<Integer> questionIds = new ArrayList<Integer>();
 
+            ArrayList<Integer> questionIds = new ArrayList<>();
             try (ResultSet resultSet = idStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    questionIds.add(resultSet.getInt("questionid"));
+                    questionIds.add(resultSet.getInt("question_id"));
                 }
             }
 

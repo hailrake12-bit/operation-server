@@ -68,9 +68,9 @@ public class DataBaseInitializer {
                 );
                 CREATE TABLE IF NOT EXISTS  public.books (
                     theme varchar NULL,
-                    book varchar NULL,
+                    "name" varchar NULL,
                     "text" text NULL,
-                    CONSTRAINT books_pk PRIMARY KEY (theme,book)
+                    CONSTRAINT books_pk PRIMARY KEY (theme,name)
                 );
             """;
         try(Statement statement = connection.createStatement()){
@@ -119,29 +119,29 @@ public class DataBaseInitializer {
     }
 
     private static void insertBooks(Connection connection, BufferedReader bookReader) throws IOException {
-        String book = null;
+        String name = null;
         String theme = null;
         StringBuilder text = new StringBuilder();
 
-        String sql = "INSERT INTO public.books (theme, book, text) VALUES (?, ?, ?) ON CONFLICT (theme, book) DO NOTHING";
+        String sql = "INSERT INTO books (theme, name, text) VALUES (?, ?, ?) ON CONFLICT (theme, name) DO NOTHING";
 
         String line;
         while ((line = bookReader.readLine()) != null) {
             if (line.startsWith("book")) {
                 String[] parts = line.split("#");
-                book = parts[0];
+                name = parts[0];
                 theme = parts[1];
             } else if (line.endsWith("#$#")) {
                 text.append(line, 0, line.length()-3);
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setString(1, theme);
-                    stmt.setString(2, book);
+                    stmt.setString(2, name);
                     stmt.setString(3, text.toString());
                     stmt.executeUpdate();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-                book = null;
+                name = null;
                 theme = null;
                 text = new StringBuilder();
             }

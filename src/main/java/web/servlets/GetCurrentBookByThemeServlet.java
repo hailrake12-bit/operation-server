@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class GetCurrentBookByThemeServlet extends Servlet {
+public class GetCurrentBookByThemeServlet implements Servlet {
 
     @Override
     public void service(Request request, Response response) throws Exception {
@@ -44,12 +44,26 @@ public class GetCurrentBookByThemeServlet extends Servlet {
 
             Book book = new Book();
             book.setName(currentBook);
+
             response.setBody(book);
         }
     }
 
+    private void updateBook(Connection connection, String bookName, String username, String theme) throws Exception{
+        String updateBookSQL = "UPDATE public.users_books " +
+                                "SET is_read = TRUE " +
+                                "WHERE username = ? AND theme = ? AND book_name = ?";
 
-//    private ArrayList<String> getBooksListByTheme(Connection connection, String theme) throws Exception{
+        try(PreparedStatement statement = connection.prepareStatement(updateBookSQL)){
+            statement.setString(1, username);
+            statement.setString(2, theme);
+            statement.setString(3, bookName);
+            statement.executeUpdate();
+        }
+    }
+
+
+//        private ArrayList<String> getBooksListByTheme(Connection connection, String theme) throws Exception{
 //        String getBooksNamesSQL = "SELECT book FROM public.books WHERE theme = ?";
 //        ArrayList<String> bookNames = new ArrayList<>();
 //
@@ -67,16 +81,6 @@ public class GetCurrentBookByThemeServlet extends Servlet {
 //        }
 //    }
 
-    private void updateBook(Connection connection, String bookName, String username, String theme) throws Exception{
-        String updateBookSQL = "UPDATE public.users_books " +
-                                "SET is_read = TRUE " +
-                                "WHERE username = ? AND theme = ? AND book_name = ?";
 
-        try(PreparedStatement statement = connection.prepareStatement(updateBookSQL)){
-         statement.setString(1, username);
-         statement.setString(2, theme);
-         statement.setString(3, bookName);
-         statement.executeUpdate();
-        }
-    }
+
 }

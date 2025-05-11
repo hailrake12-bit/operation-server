@@ -12,22 +12,22 @@ import java.util.HashMap;
 
 import static web.servlets.RandomThemeServlet.getThemes;
 
-public class RegisterUserServlet extends Servlet {
+public class RegisterUserServlet implements Servlet {
 
     public void service(Request request, Response response) throws SQLException{
+        String insertUserDataSQL = "INSERT INTO users (username, password) VALUES (?, ?)";
 
-        String insertSQL = "INSERT INTO users (username, password) VALUES (?, ?)";
         String username = request.getBody()[0].split(":")[1];
+        String password =  request.getBody()[1].split(":")[1];
 
         try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
-             PreparedStatement stmt = connection.prepareStatement(insertSQL)) {
-            stmt.setString(1, username);
-            stmt.setString(2, request.getBody()[1].split(":")[1]);
+             PreparedStatement preparedStatement = connection.prepareStatement(insertUserDataSQL)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            preparedStatement.executeUpdate();
 
-            stmt.executeUpdate();
-
-            addGrades(username);
-            addBooks(username);
+            addGrades(connection, username);
+            addBooks(connection, username);
 
         } catch (SQLException e) {
             System.err.println("Ошибка подключения: " + e.getMessage());
@@ -36,15 +36,12 @@ public class RegisterUserServlet extends Servlet {
         }
     }
 
-    private void addGrades(String username) throws SQLException{
+    private void addGrades(Connection connection, String username) throws SQLException{
         String insertGradesSQL = "INSERT INTO users_grades(username, theme, grade) values (?, ?, 0.0)";
 
-        try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
-             PreparedStatement stmt = connection.prepareStatement(insertGradesSQL)) {
+        try (PreparedStatement stmt = connection.prepareStatement(insertGradesSQL)) {
+            ArrayList<String> themes = getThemes(connection); //change to ArrayList<Theme>
 
-            ArrayList<String> themes = getThemes(connection);
-
-            assert themes != null;
             for(String theme : themes){
                 stmt.setString(1, username);
                 stmt.setString(2, theme);
@@ -53,12 +50,11 @@ public class RegisterUserServlet extends Servlet {
         }
     }
 
-    private void addBooks(String username) throws SQLException{
+    private void addBooks(Connection connection, String username) throws SQLException{
         String insertBooksSQL = "INSERT INTO users_books(username, theme, book_name) values(?, ?, ?)";
 
-        try(Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
-                PreparedStatement preparedStatement = connection.prepareStatement(insertBooksSQL)){
-            ArrayList<Book> books = getBookNames();
+        try(PreparedStatement preparedStatement = connection.prepareStatement(insertBooksSQL)){
+            ArrayList<Book> books = getBookNames(connection);
 
             for(Book book : books){
                 preparedStatement.setString(1, username);
@@ -69,18 +65,17 @@ public class RegisterUserServlet extends Servlet {
         }
     }
 
-    private ArrayList<Book> getBookNames() throws SQLException{
-        String getBookNames = "SELECT theme, book FROM books"; //change field name book to name in DataBase
+    private ArrayList<Book> getBookNames(Connection connection) throws SQLException{
+        String getBookNames = "SELECT theme, name FROM books";
 
-        try(Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
-                PreparedStatement preparedStatement = connection.prepareStatement(getBookNames)){
+        try(PreparedStatement preparedStatement = connection.prepareStatement(getBookNames)){
             ArrayList<Book> books = new ArrayList<>();
 
             try (ResultSet resultSet = preparedStatement.executeQuery()){
                 while(resultSet.next()){
                     Book book = new Book();
                     book.setTheme(resultSet.getString("theme"));
-                    book.setName(resultSet.getString("book"));
+                    book.setName(resultSet.getString("name"));
                     books.add(book);
                 }
             }

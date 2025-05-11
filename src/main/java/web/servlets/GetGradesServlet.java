@@ -1,5 +1,6 @@
 package web.servlets;
 
+import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Response;
 import web.entities.Grade;
@@ -7,27 +8,25 @@ import web.entities.Grades;
 
 import java.sql.*;
 
-public class GetGradesServlet extends Servlet{
+public class GetGradesServlet implements Servlet{
     @Override
     public void service(Request request, Response response) throws Exception {
         String selectGradesSQL = "SELECT grade, theme FROM users_grades WHERE username = ?";
 
-        Grades grades = new Grades();
+        String username = request.getParam("username");
+        try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
+             PreparedStatement preparedStatement = connection.prepareStatement(selectGradesSQL)) {
 
-        String username = request.getParams()[0].split("=")[1];
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
-             PreparedStatement stmt = connection.prepareStatement(selectGradesSQL)) {
+            Grades grades = new Grades();
+            preparedStatement.setString(1, username);
 
-            stmt.setString(1, username);
-
-            try (ResultSet resultSet = stmt.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String theme = resultSet.getString("theme");
                     Double grade = resultSet.getDouble("grade");
                     grades.put(theme, grade);
                 }
             }
-
 
             response.setBody(grades);
         }

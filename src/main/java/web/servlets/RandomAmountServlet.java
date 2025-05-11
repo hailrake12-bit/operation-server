@@ -1,5 +1,6 @@
 package web.servlets;
 
+import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
@@ -8,14 +9,14 @@ import web.entities.AmountOfQuestions;
 import java.sql.*;
 import java.util.Random;
 
-public class RandomAmountServlet extends Servlet{
+public class RandomAmountServlet implements Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String theme = request.getParams()[0].split("=")[1];
+        String theme = request.getParam("theme");
         String selectAmountSQL = "SELECT COUNT(*) FROM questions WHERE theme = ?";
 
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword());
+        try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
              PreparedStatement amountStatement = connection.prepareStatement(selectAmountSQL)) {
 
             amountStatement.setString(1, theme);
@@ -23,7 +24,7 @@ public class RandomAmountServlet extends Servlet{
             int amount = 0;
             try (ResultSet resultSet = amountStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    amount = resultSet.getInt(1); // Получаем значение из первой колонки (COUNT(*))
+                    amount = resultSet.getInt(1);
                 }
             }
 

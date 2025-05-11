@@ -1,5 +1,6 @@
 package web.servlets;
 
+import web.database.DataBase;
 import web.requests.Request;
 import web.responses.Body;
 import web.responses.Response;
@@ -13,16 +14,16 @@ import java.util.Random;
 
 import static web.servlets.GetGradesServlet.getCurrentGrade;
 
-public class RandomThemeServlet extends Servlet{
+public class RandomThemeServlet implements Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String username = request.getParams()[0].split("=")[1];
+        String username = request.getParam("username");
 
-        try (Connection connection = DriverManager.getConnection(db.getURL(), db.getUser(), db.getPassword())) {
+        try (Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword())) {
             ArrayList<String> themes = getThemes(connection);
 
-            if (themes.size() == 0) {
+            if (themes.isEmpty()) {
                 response.setStatus("400");
                 response.setDescription("questions DataBase is empty");
                 return;
@@ -60,7 +61,7 @@ public class RandomThemeServlet extends Servlet{
         }
     }
 
-    private Body getSuitableTheme(Connection connection,String username, ArrayList<String> themes) throws SQLException{
+    private Body getSuitableTheme(Connection connection, String username, ArrayList<String> themes) throws SQLException{
         HashMap<String, Double> grades = new HashMap<>();
         Grade lastGrade, newGrade = new Grade(0);
 

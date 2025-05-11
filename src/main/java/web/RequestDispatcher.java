@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestDispatcher {
-    private BufferedWriter writer;
-    private BufferedReader reader;
-
-
+    private final BufferedWriter writer;
+    private final BufferedReader reader;
+    
     private final Map<String, Map<String, Servlet>> routes = new HashMap<>();
 
     public RequestDispatcher(BufferedWriter writer, BufferedReader reader) {
@@ -58,7 +57,7 @@ public class RequestDispatcher {
     }
 
     public void dispatch() throws Exception{
-        //readRequest(reader);
+        readRequest(reader);
 
         Request request = parseRequest();
         Response response = new Response();
@@ -79,7 +78,7 @@ public class RequestDispatcher {
         Servlet servlet = methodRoutes.get(request.getMethod());
 
         if (servlet == null) {
-            response.setStatus("405"); // Метод не поддерживается
+            response.setStatus("405");
             response.setDescription("Method Not Allowed");
 
             sendResponse(response);
@@ -101,34 +100,37 @@ public class RequestDispatcher {
     }
 
     private Request parseRequest() throws Exception {
-        List<String> lines = new ArrayList<>();
-        String line;
-
-        // 1. Чтение всех строк запроса
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
-            lines.add(line);
-        }
-
-        // 2. Чтение тела запроса (POST-данные)
+        List<String> request = new ArrayList<>();
         StringBuilder bodyBuilder = new StringBuilder();
+
+        String method = null;
+        String path = null;
+        String[] queryParams = null;
+
+        String[] requestParts;
+        String[] requestLine;
+
+        String line;
+        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+            request.add(line);
+        }
         while (reader.ready()) {
             bodyBuilder.append((char) reader.read());
         }
 
-        // 3. Обработка первой строки (например: "POST /addUser HTTP/1.1")
-        String[] requestLine = lines.get(0).split(" ");
-        String method = requestLine[0];
-        String path = requestLine[1].split("\\?")[0];
+        if(!request.isEmpty()){
+            requestLine = request.get(0).split(" ");
+            method = requestLine[0];
+            path = requestLine[1].split("\\?")[0];
 
-        String[] requestParts = requestLine[1].split("\\?", 2); // ограничиваем количество разбиений
-        String[] queryParams = new String[0]; // по умолчанию — пустой массив
+            requestParts = requestLine[1].split("\\?", 2);
 
-        if (requestParts.length == 2) {
-            queryParams = requestParts[1].split("&");
+            if (requestParts.length == 2) {
+                queryParams = requestParts[1].split("&");
+            }
         }
 
-
-        // 4. Обработка тела как JSON
+        //make working with stream
         String bodyRaw = bodyBuilder.toString();
         String[] body = bodyRaw.replace("{", "")
                 .replace("}", "")
@@ -146,5 +148,4 @@ public class RequestDispatcher {
             System.out.println(line);
         }
     }
-
 }

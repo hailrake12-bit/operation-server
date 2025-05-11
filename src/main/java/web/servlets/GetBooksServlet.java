@@ -11,22 +11,22 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class GetBooksServlet extends Servlet{
+public class GetBooksServlet implements Servlet{
 
     @Override
     public void service(Request request, Response response) throws Exception {
-        String selectBookSQL = "SELECT * FROM public.books";
+        String selectBookSQL = "SELECT theme, book, text FROM public.books";
 
         try(Connection connection = DriverManager.getConnection(DataBase.getURL(), DataBase.getUser(), DataBase.getPassword());
             PreparedStatement statement = connection.prepareStatement(selectBookSQL)){
-            Books bookList = new Books();
+            Books bookList = new Books(); //recheck possibility of using ArrayList<Book>
 
             try(ResultSet resultSet = statement.executeQuery()){
                 while (resultSet.next()) {
                     Book book = new Book();
-                    book.setTheme(resultSet.getString(1));
-                    book.setName(resultSet.getString(2));
-                    book.setText(resultSet.getString(3));
+                    book.setTheme(resultSet.getString("theme"));
+                    book.setName(resultSet.getString("book")); //rename field
+                    book.setText(resultSet.getString("text"));
                     bookList.addBook(book);
                 }
             }
